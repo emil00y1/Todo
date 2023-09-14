@@ -1,13 +1,11 @@
 "use strict";
-const btn = document.querySelector("#add_btn");
-const toDoList = document.querySelector("#to_do_table");
+const btn = document.querySelector("#add_button");
+const toDoList = document.querySelector("#todo_table");
 const doneList = document.querySelector("#done_table");
-let taskArray = [];
-let doneArray = [];
-localStorage.setItem("doneArray", JSON.stringify(doneArray));
-localStorage.setItem("array", JSON.stringify(taskArray));
+let taskArray = JSON.parse(localStorage.getItem("array")) || [];
+let doneArray = JSON.parse(localStorage.getItem("doneArray")) || [];
 
-const editBtn = document.querySelector("#edit_btn");
+const editBtn = document.querySelector("#edit_button");
 const impText = document.querySelector("#input_text");
 const impDate = document.querySelector("#input_date");
 
@@ -39,24 +37,34 @@ editBtn.addEventListener("click", showEdit);
 btn.addEventListener("click", addTask);
 
 function showEdit() {
-  document.querySelectorAll(".del_btn").forEach((btn) => {
+  document.querySelectorAll(".delete").forEach((btn) => {
     btn.classList.toggle("hidden");
     btn.addEventListener("click", delTask);
   });
-  if (impText.disabled === false) {
-    impText.disabled = true;
-    impDate.disabled = true;
-    btn.disabled = true;
+
+  if (document.querySelector(".delete") !== null) {
+    if (document.querySelector(".delete").classList.contains("hidden")) {
+      impText.disabled = false;
+      impDate.disabled = false;
+      btn.disabled = false;
+      editBtn.textContent = "edit list";
+    } else {
+      impText.disabled = true;
+      impDate.disabled = true;
+      btn.disabled = true;
+      editBtn.textContent = "cancel";
+    }
   } else {
     impText.disabled = false;
     impDate.disabled = false;
     btn.disabled = false;
+    editBtn.textContent = "edit list";
   }
 }
 
 function delTask(evt) {
   const targetID = evt.target.parentElement.id;
-  if (evt.target.parentElement.parentElement.id === "to_do_table") {
+  if (evt.target.parentElement.parentElement.id === "todo_table") {
     const targetObj = taskArray.findIndex(
       (taskObj) => taskObj.id === parseInt(targetID)
     );
@@ -76,13 +84,14 @@ function delTask(evt) {
 function displayAll() {
   displayLocalTask();
   displayLocalDone();
+  showEdit();
 }
 
 function displayLocalTask() {
   toDoList.innerHTML = "";
   taskArray = JSON.parse(localStorage.getItem("array"));
   if (taskArray !== null) {
-    console.log(taskArray);
+    // console.log(taskArray);
     taskArray.forEach((task) => {
       const clone = document.querySelector("template").content.cloneNode(true);
       const star = clone.querySelector("[data-field=fav]");
@@ -119,7 +128,7 @@ function displayLocalTask() {
         );
         taskArray.splice(targetObj, 1);
         localStorage.setItem("array", JSON.stringify(taskArray));
-        displayLocalTask();
+        displayLocalTask(evt);
       }
 
       function favClicked() {
@@ -141,6 +150,7 @@ function displayLocalTask() {
     });
   }
 }
+
 function displayLocalDone() {
   doneList.innerHTML = "";
   taskArray.map((task) => {
@@ -155,9 +165,10 @@ function displayLocalDone() {
     doneArray.forEach((task) => {
       const clone = document.querySelector("template").content.cloneNode(true);
       const star = clone.querySelector("[data-field=fav]");
+
       const checkBox = clone.querySelector("input");
-      checkBox.addEventListener("click", taskUndone);
       star.addEventListener("click", favClicked);
+      checkBox.addEventListener("click", taskUnDone);
 
       if (task.fav === true) {
         clone.querySelector("[data-field=fav]").innerHTML = starFull;
@@ -171,7 +182,7 @@ function displayLocalDone() {
         clone.querySelector("input").checked = false;
       }
 
-      function taskUndone(evt) {
+      function taskUnDone(evt) {
         const targetID = evt.target.parentElement.parentElement.id;
         const targetObj = doneArray.findIndex(
           (taskObj) => taskObj.id === parseInt(targetID)
@@ -182,7 +193,6 @@ function displayLocalDone() {
 
         localStorage.setItem("doneArray", JSON.stringify(doneArray));
         localStorage.setItem("array", JSON.stringify(taskArray));
-
         displayLocalDone();
         displayLocalTask();
       }
@@ -270,13 +280,13 @@ function displayTask(task) {
     } else {
       task.done = false;
     }
+    console.log(taskArray);
     displayLocalDone(evt);
 
     const targetID = evt.target.parentElement.parentElement.id;
     const targetObj = taskArray.findIndex(
       (taskObj) => taskObj.id === parseInt(targetID)
     );
-    console.log("Objektet", targetObj);
     taskArray.splice(targetObj, 1);
     localStorage.setItem("array", JSON.stringify(taskArray));
     displayLocalTask();
@@ -298,5 +308,3 @@ function displayTask(task) {
   clone.querySelector("[data-field=date]").textContent = task.date;
   toDoList.appendChild(clone);
 }
-
-function checkDone() {}
