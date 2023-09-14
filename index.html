@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script type="module" src="js/script.js"></script>
+    <title>Your Favourite To Do List</title>
+  </head>
+  <body>
+    <h1>Your Favourite To Do List</h1>
+    <section id="task_to_do">
+      <div>
+        <h2>To do</h2>
+        <button id="edit_btn">Edit</button>
+      </div>
+      <table id="to_do_table"></table>
+      <form>
+        <input id="input_text" type="text" required />
+        <input id="input_date" type="date" />
+        <button id="add_btn">Add</button>
+      </form>
+    </section>
+    <section id="task_completed">
+      <h2>Completed</h2>
+      <table id="done_table"></table>
+    </section>
+    <template>
+      <tr>
+        <td><input type="checkbox" /></td>
+        <td data-field="desc"></td>
+        <td data-field="date"></td>
+        <td data-field="fav"></td>
+        <td data-field="id" class="del_btn hidden">x</td>
+      </tr>
+    </template>
+  </body>
+</html>
